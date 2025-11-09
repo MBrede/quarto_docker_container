@@ -2,7 +2,7 @@
 
 set -e
 
-IMAGE_NAME="your-dockerhub-username/quarto-render"
+IMAGE_NAME="mbrede/quarto-render"
 VERSION="1.0.0"
 
 echo "Building Docker image..."

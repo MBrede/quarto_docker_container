@@ -12,24 +12,37 @@ RUN apt-get update && apt-get install -y \
     texlive-xetex \
     texlive-fonts-recommended \
     texlive-plain-generic \
+    texlive-luatex\
+    texlive-latex-base\
+    texlive-fonts-extra\
     librsvg2-bin \
+    && apt-get install -y wget gnupg \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
+      --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://github.com/quarto-dev/quarto-cli/releases/download/v1.4.553/quarto-1.4.553-linux-amd64.deb && \
-    dpkg -i quarto-1.4.553-linux-amd64.deb && \
-    rm quarto-1.4.553-linux-amd64.deb
+RUN wget https://github.com/quarto-dev/quarto-cli/releases/download/v1.8.25/quarto-1.8.25-linux-amd64.deb && \
+    dpkg -i quarto-1.8.25-linux-amd64.deb && \
+    rm quarto-1.8.25-linux-amd64.deb
 
-RUN python3 -m pip install --upgrade pip && \
-    pip install jupyter
+WORKDIR /workspace
+
+RUN python3 -m venv req-venv
+
+RUN /workspace/req-venv/bin/python3 -m pip install --upgrade pip && \
+    /workspace/req-venv/bin/pip install jupyter
 
 RUN Rscript -e 'install.packages("stringr", Ncpus = 6)'
 
-COPY collect_python_deps.py /usr/local/bin/collect_python_deps.py
-COPY collect_r_deps.R /usr/local/bin/collect_r_deps.R
+COPY collect_python_deps.py /workspace/collect_python_deps.py
+COPY collect_r_deps.R /workspace/collect_r_deps.R
 
-RUN chmod +x /usr/local/bin/collect_python_deps.py && \
-    chmod +x /usr/local/bin/collect_r_deps.R
+RUN chmod +x /workspace/collect_python_deps.py && \
+    chmod +x /workspace/collect_r_deps.R
 
-WORKDIR /workspace
+
 
 CMD ["/bin/bash"]

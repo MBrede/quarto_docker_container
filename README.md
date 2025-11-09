@@ -111,7 +111,7 @@ RUN apt-get update && apt-get install -y \
 
 Add to Dockerfile to speed up workflows:
 ```dockerfile
-RUN pip install pandas numpy matplotlib
+RUN /workspace/req-venv/bin/pip install pandas numpy matplotlib
 RUN Rscript -e 'install.packages(c("ggplot2", "dplyr"), Ncpus = 6)'
 ```
 

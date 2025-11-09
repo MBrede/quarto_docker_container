@@ -51,9 +51,12 @@ def collect_python_packages():
     print(f"Found Python packages: {sorted(packages)}")
 
     if packages:
-        pip_cmd = ['pip', 'install'] + list(packages)
-        subprocess.run(pip_cmd, check=False)
+        for package in packages:
+            try:
+                pip_cmd = ['/workspace/req-venv/bin/pip', 'install', package]
+                subprocess.run(pip_cmd, check=False)
+            except Exception:
+                print(f"{package} could not be installed! maybe add specifically to requirements?")
 
 if __name__ == '__main__':
     collect_python_packages()
-    subprocess.run(['pip', 'install', 'jupyter'], check=True)
