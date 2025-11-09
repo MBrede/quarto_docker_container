@@ -1,5 +1,12 @@
 FROM rocker/r2u:24.04
 
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    UV_NO_CACHE=1 \
+    VIRTUAL_ENV=/workspace/req-venv
+
+
 RUN apt-get update && apt-get install -y \
     curl \
     git \
@@ -28,12 +35,17 @@ RUN wget https://github.com/quarto-dev/quarto-cli/releases/download/v1.8.25/quar
     dpkg -i quarto-1.8.25-linux-amd64.deb && \
     rm quarto-1.8.25-linux-amd64.deb
 
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin/:$PATH"
+
 WORKDIR /workspace
 
-RUN python3 -m venv req-venv
+# Create virtual environment
+RUN uv venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN /workspace/req-venv/bin/python3 -m pip install --upgrade pip && \
-    /workspace/req-venv/bin/pip install jupyter
+RUN uv pip install jupyter
 
 RUN Rscript -e 'install.packages("stringr", Ncpus = 6)'
 

@@ -53,7 +53,7 @@ def collect_python_packages():
     if packages:
         for package in packages:
             try:
-                pip_cmd = ['/workspace/req-venv/bin/pip', 'install', package]
+                pip_cmd = ['uv', 'pip', 'install', package]
                 subprocess.run(pip_cmd, check=False)
             except Exception:
                 print(f"{package} could not be installed! maybe add specifically to requirements?")
