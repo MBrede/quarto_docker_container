@@ -1,0 +1,30 @@
+name: Quarto Publish
+on:
+  push:
+    branches:
+      - main
+permissions:
+  contents: write
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    container:
+      image: your-dockerhub-username/quarto-render:latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      
+      - name: Collect and Install Python dependencies
+        run: python3 /usr/local/bin/collect_python_deps.py
+      
+      - name: Collect and Install R packages
+        run: Rscript /usr/local/bin/collect_r_deps.R
+      
+      - name: Render and Publish
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
